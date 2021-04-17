@@ -10,34 +10,49 @@ package clases;
  * @author vanes
  */
 public class Nodo {
-    public String dato, direccion;
-    Nodo enlace;
+     public String nombre, direccion;
     public Nodo siguiente, anterior;
     
-     public Nodo(String nombre, String direccion) {
-        this.dato = nombre;
+    public Nodo(String nombre, String direccion) {
+        this.nombre = nombre;
+        this.direccion = direccion;
+        siguiente = null;
+        anterior = null;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
+
+    public Nodo getSiguiente() {
+        return siguiente;
+    }
+
+    public void setSiguiente(Nodo siguiente) {
+        this.siguiente = siguiente;
+    }
+
+    public Nodo getAnterior() {
+        return anterior;
+    }
+
+    public void setAnterior(Nodo anterior) {
+        this.anterior = anterior;
+    }
+
     
-    public Nodo(String x){
-        dato = x;
-        enlace = null;
-    }
     
-    public Nodo(String x, Nodo n){
-        dato = x;
-        enlace = n;
-    }
     
-    public String getDato(){
-        return dato;
-       
-    }
-    
-    public Nodo getEnlace(){
-        return enlace;
-    }
-    public void setEnlace(Nodo enlace){
-        this.enlace = enlace;
-    }
 }

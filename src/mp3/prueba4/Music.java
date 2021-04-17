@@ -5,8 +5,10 @@
  */
 package mp3.prueba4;
 
+
+import ListaCircular.BaseListaCircular;
+import ListaDoble.clsListaDoble;
 import clases.Nodo;
-import clases.listaOrdenada;
 import clases.player;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -37,7 +39,8 @@ import javazoom.jlgui.basicplayer.BasicPlayerException;
  */
 public class Music extends javax.swing.JFrame {//interfaz grafica swing 
     
-    private listaOrdenada list = new listaOrdenada();
+    //private listaOrdenada list = new listaOrdenada();
+    private clsListaDoble list = new clsListaDoble();
     private Nodo actual = null;
     private player player;
     private int tam = 0;
@@ -45,6 +48,7 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
     private String ultimaLista = "vacio";
     private boolean cambios = false;
     public boolean stop = false;
+    private BaseListaCircular repetir = new BaseListaCircular();
     
     public Music() {
         initComponents();//para inicializar todos los componentes graficos de mi jframe
@@ -63,7 +67,7 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
                 if (evt.getClickCount() == 2) {
                     int cancion = lista.locationToIndex(evt.getPoint());
                     if (cancion != -1) {
-                        actual = list.get_cancion(cancion);
+                        actual = list.cancion(cancion);
                         tam = 0;
                         btnPlayActionPerformed(null);
                     }
@@ -90,7 +94,8 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
             @Override
             public void windowClosing(java.awt.event.WindowEvent evt) {//metodo para generar el evento al querer
                 //cerrar una ventana
-                if (!list.vacia()&& cambios) {
+                if (!list.vacia() || !cambios) {
+                } else {
                     int opcion = JOptionPane.showConfirmDialog(null, "¿Guardar cambios?");
                     if (opcion == JOptionPane.YES_OPTION) {
                         if (ultimaLista.equals("vacio")) {
@@ -132,7 +137,7 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
             Nodo aux;
             aux = list.primero;
             while (aux != null) {
-                tec.append(aux.dato + "<" + aux.direccion + "\r\n");
+                tec.append(aux.nombre + "<" + aux.direccion + "\r\n");
                 aux = aux.siguiente;
             }
 
@@ -175,8 +180,8 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
             while (archivo.ready()) {
                 input = archivo.readLine().split("<");
                 System.out.println(input[0] + " , " + input[1]);
-                list.insertar(input[0], input[1]);
-                lista_modelo.addElement(input[0]);
+                list.inserta(input[0], input[1] );//, input[1]
+                lista_modelo.addElement(input[1]);
             }
             ultimaLista = ruta;
             cambios = false;
@@ -259,7 +264,7 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
         });
 
         volumen1.setToolTipText("");
-        volumen1.setValue(25);
+        volumen1.setValue(100);
         volumen1.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 volumen1StateChanged(evt);
@@ -270,7 +275,7 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
 
         jScrollPane1.setViewportView(listado);
 
-        reproduccion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Normal", "Inversa", "Aleatoria" }));
+        reproduccion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Normal", "Repetir", "Aleatoria" }));
 
         jMenu1.setText("File");
 
@@ -338,15 +343,6 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addComponent(nameSong, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(84, 84, 84)
-                        .addComponent(gif2)))
-                .addGap(0, 53, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(69, 69, 69)
@@ -356,18 +352,28 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
                                 .addComponent(reproduccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(volumen1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(volumen1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(anterior1, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnPlay, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(siguiente, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(106, 106, 106))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane1)))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(gif2)
+                .addGap(89, 89, 89))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(42, 42, 42)
+                .addComponent(nameSong, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(84, 84, 84)
@@ -382,15 +388,15 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(33, Short.MAX_VALUE)
+                .addContainerGap(27, Short.MAX_VALUE)
                 .addComponent(gif2, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(nameSong, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(siguiente)
-                        .addComponent(btnPlay, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnPlay, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(siguiente))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(reproduccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(anterior1)))
@@ -429,8 +435,8 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
                     
                     player.control.open(new URL("file:///" + actual.direccion));
                     player.control.play();
-                    System.out.println("Reproducciendo");
-                    nameSong.setText(actual.dato);
+                    System.out.println("Reproduciendo");
+                    nameSong.setText(actual.nombre);
                     volumen1.setEnabled(true);
                     tam = 1;
                     btnPlay.setIcon(new ImageIcon(getClass().getResource("/iconosMP3/pausa.png")));
@@ -448,7 +454,7 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
                     }
                 }
             } catch (BasicPlayerException ex) {
-                JOptionPane.showMessageDialog(null, "ERRO CON LA CANCION", "ALERTA", 1);
+                JOptionPane.showMessageDialog(null, "ERROR CON LA CANCION", "ALERTA", 1);
                 tam = 0;
             } catch (MalformedURLException ex) {
                 Logger.getLogger(Music.class.getName()).log(Level.SEVERE, null, ex);
@@ -483,7 +489,8 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
                     repetidos = true;
                     continue;
                 }
-                list.insertar(file.getName(), file.getPath());
+                list.inserta(file.getName(),file.getPath());//file.getName(), file.getPath()
+                //list.insertaDespues(actual,file.getName(), file.getPath());
                 System.out.println(file.getName());
                 System.out.println(file.getPath());
                 lista_modelo.addElement(file.getName());
@@ -515,15 +522,19 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
                 break;
 
             case 1:
-                if (actual.siguiente == null) {
-                    return;
-                }
-                actual = actual.siguiente;
+               while(!repetir.vacia()){
+                    if(actual != null){
+                        actual = actual.anterior;
+                     }else if(actual.anterior != null){
+                        actual = actual.siguiente;
+                    }
+               }
+                
                 break;
 
             default:
                 int index = (int) (Math.random() * list.tam);
-                actual = list.get_cancion(index);
+                actual = list.cancion(index);
                 break;
         }
 
@@ -536,7 +547,11 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
        if (actual == null) {
             return;
         }
-
+       /*else{
+           //actual = actual.siguiente;
+           
+       }*/
+       
         switch (reproduccion.getSelectedIndex()) {
             case 0:
                 if (actual.siguiente == null) {
@@ -546,15 +561,25 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
                 break;
 
             case 1:
-                if (actual.anterior == null) {
+
+                while(!repetir.vacia()){
+                    if(actual != null){
+                        actual = actual.siguiente;
+                     }else if(actual.siguiente != null){
+                        actual = actual.anterior;
+                    }
+                }
+                
+                /*if (actual.anterior == null) {
                     return;
                 }
-                actual = actual.anterior;
+                
+                actual = actual.anterior;*/
                 break;
 
             default:
                 int index = (int) (Math.random() * list.tam);
-                actual = list.get_cancion(index);
+                actual = list.cancion(index);
                 break;
         }
 
@@ -576,7 +601,7 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
             lista_modelo.remove(q);
             list.borrar(actual);
             detenerActionPerformed(evt);
-            if (list.vacia()) {
+            if (list.primero == null) {
                 actual = null;
                 nameSong.setText("...");
             } else {
@@ -589,7 +614,7 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
                         actual = actual.siguiente;
                     }
                 }
-                nameSong.setText(actual.dato);
+                nameSong.setText(actual.nombre);
             }
         }
         cambios = true;        // TODO add your handling code here:
@@ -610,7 +635,7 @@ public class Music extends javax.swing.JFrame {//interfaz grafica swing
 
     private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
         
-        if (list.vacia()) {
+        if (list.primero == null) {
             JOptionPane.showMessageDialog(null, "SU LISTA ESTA VACIA /n AGREGUE CANCIONES+"
                     + "PARA REPRODUCIR", "ATENCION", 1);
             return;
